@@ -1,15 +1,16 @@
-#include <Arduino.h>
-#include <Wire.h>
-#include <WiFi.h>
-#include <time.h>
-#include <Adafruit_Sensor.h>
-#include <Adafruit_BMP280.h>
-#include <Adafruit_GFX.h>
-#include <Adafruit_SharpMem.h>
-#include "SparkFun_BMA400_Arduino_Library.h"
-#include <HTTPClient.h>
-#include <Arduino_JSON.h>
-#include <bitmaps.h>
+#include <Arduino.h>                            // Use Arduino framework
+#include <Wire.h>                               // I2C library
+#include <WiFi.h>                               // WiFi library
+#include <time.h>                               // Time library
+#include <Adafruit_Sensor.h>                    // Adafruit sensor library              
+#include <Adafruit_BMP280.h>                    // Adafruit BMP280 Temperature sensor library
+#include <Adafruit_GFX.h>                       // Adafruit GFX library            
+#include <Adafruit_SharpMem.h>                  // Adafruit Sharp Memory Display library        
+#include "SparkFun_BMA400_Arduino_Library.h"    // Sparkfun BMA400 Accelerometer library
+#include <HTTPClient.h>                         // HTTP Client library     
+#include <Arduino_JSON.h>                       // Arduino JSON library
+#include <bitmaps.h>                            // Custom Bitmaps
+#include <weather_time.h>
 
 // Sleep mode setup
 #define uS_TO_S_FACTOR 1000000
@@ -25,12 +26,9 @@
 #define SHARP_SCK  8
 #define SHARP_MOSI 7
 #define SHARP_SS   6
-
-Adafruit_SharpMem display(SHARP_SCK, SHARP_MOSI, SHARP_SS, 240, 240);
-
 #define BLACK 0
 #define WHITE 1
-
+Adafruit_SharpMem display(SHARP_SCK, SHARP_MOSI, SHARP_SS, 240, 240);
 int minorHalfSize;
 
 // Initialize the BMP280 sensor
@@ -41,66 +39,6 @@ BMA400 accelerometer;
 uint8_t i2cAddress = BMA400_I2C_ADDRESS_DEFAULT; 
 int interruptPin = 2;
 volatile bool interruptOccured = false;
-
-// WiFi and time initialization
-const char* ssid = "Politi_Lyttevogn";
-const char* password = "kradsfarni";
-
-const char* ntpServer = "pool.ntp.org";
-const long  gmtOffset_sec = 3600;
-const int   daylightOffset_sec = 3600;
-
-// Weather Initialization
-// http://api.openweathermap.org/data/2.5/weather?q=aarhus,DK&APPID=bd491523d4252d78faacefbce30470d3
-String openWeatherApiKey = "bd491523d4252d78faacefbce30470d3";
-String city = "Aarhus";
-String countryCode = "DK";
-String jsonBuffer;
-String weather_temp;
-String weather_icon;
-
-// Bools for checking if data has been collected
-bool hasTime = false;
-bool hasWeather = false;
-
-String httpGETRequest(const char* serverName) {
-  WiFiClient client;
-  HTTPClient http;
-    
-  // Your Domain name with URL path or IP address with path
-  http.begin(client, serverName);
-  
-  // Send HTTP POST request
-  int httpResponseCode = http.GET();
-  
-  String payload = "{}"; 
-  
-  if (httpResponseCode>0) {
-    payload = http.getString();
-  }
-  else {
-    Serial.print("Error code: ");
-    Serial.println(httpResponseCode);
-  }
-  // Free resources
-  http.end();
-
-  return payload;
-}
-
-// Time keeping function. Don't touch.
-String printLocalTime()
-{
-  struct tm timeinfo;
-  if(!getLocalTime(&timeinfo)){
-    Serial.println("Failed to obtain time");
-    return "00:00";
-  }
-  char timeHour[6];
-  strftime(timeHour,6,"%H:%M",&timeinfo);
-  hasTime = true;
-  return timeHour;
-}
 
 float speed_up = 0.5;
 void thumbs_up_animation() {
