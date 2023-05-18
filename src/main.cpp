@@ -11,6 +11,7 @@
 #include <Arduino_JSON.h>                       // Arduino JSON library
 #include <bitmaps.h>                            // Custom Bitmaps
 #include <weather_time.h>
+#include <pass.h>
 
 // Sleep mode setup
 #define uS_TO_S_FACTOR 1000000
