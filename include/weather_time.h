@@ -3,15 +3,12 @@
 #include <HTTPClient.h>
 
 // WiFi and time initialization
-const char* ssid = "Politi_Lyttevogn";
-const char* password = "kradsfarni";
 const char* ntpServer = "pool.ntp.org";
 const long  gmtOffset_sec = 3600;
 const int   daylightOffset_sec = 3600;
 
 // Weather Initialization
 // http://api.openweathermap.org/data/2.5/weather?q=aarhus,DK&APPID=bd491523d4252d78faacefbce30470d3
-String openWeatherApiKey = "bd491523d4252d78faacefbce30470d3";
 String city = "Aarhus";
 String countryCode = "DK";
 String jsonBuffer;

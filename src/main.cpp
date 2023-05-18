@@ -41,7 +41,7 @@ uint8_t i2cAddress = BMA400_I2C_ADDRESS_DEFAULT;
 int interruptPin = 2;
 volatile bool interruptOccured = false;
 
-float speed_up = 0.5;
+float speed_up = 0.3;
 void thumbs_up_animation() {
   display.fillScreen(WHITE);
   display.drawBitmap(0, 0, vaultboy_thumbsup1, 240, 240, BLACK);
@@ -125,7 +125,6 @@ void getData(bool on_boot) {
 
   // Get weather data
   String serverPath = "http://api.openweathermap.org/data/2.5/weather?q=" + city + "," + countryCode + "&APPID=" + openWeatherApiKey + "&units=metric";
-
   jsonBuffer = httpGETRequest(serverPath.c_str());
   JSONVar myObject = JSON.parse(jsonBuffer);
 
@@ -251,10 +250,21 @@ uint8_t menu = 0; // 0 = main, 1 = analog
 uint32_t time_since_menu = 0;
 bool menu_switch = false;
 
+uint32_t time_to_sleep = 0;
+bool init_sleep = false;
+
+uint32_t soc_temp_millis = 0;
+float internal_temp = 0;
+
 void loop() 
 {
   // read button
   buttonState = digitalRead(BUTTON_PIN);
+
+  if (millis() - soc_temp_millis > 1000 && menu == 2) {
+    soc_temp_millis = millis();
+    internal_temp = (float)temperatureRead();
+  }
 
   if (buttonState == HIGH && millis() - time_since_menu > 250) {
     time_since_menu = millis();
@@ -370,19 +380,18 @@ void loop()
     int minuteEndX = 120 + (int)(sin((minuteAngle) * PI / 180.0) * 80);
     int minuteEndY = 120 - (int)(cos((minuteAngle) * PI / 180.0) * 80);
 
-    int hand_width = 6;
-    for (int i = hand_width * (-1); i < hand_width; i++) {
-      display.drawLine(120 - i, 120 + i, hourEndX, hourEndY, BLACK);
-      display.drawLine(120 - i, 120 + i, minuteEndX, minuteEndY, BLACK);
-    }
+    int handWidth = 5;
+    display.drawTriangle(120 - handWidth, 120 - handWidth, 120 + handWidth, 120 + handWidth, hourEndX, hourEndY, BLACK);
+    display.fillTriangle(120 - handWidth, 120 - handWidth, 120 + handWidth, 120 + handWidth, hourEndX, hourEndY, BLACK);
+    display.drawTriangle(120 - handWidth, 120 - handWidth, 120 + handWidth, 120 + handWidth, minuteEndX, minuteEndY, BLACK);
+    display.fillTriangle(120 - handWidth, 120 - handWidth, 120 + handWidth, 120 + handWidth, minuteEndX, minuteEndY, BLACK);
 
     display.drawCircle(120, 120, 8, BLACK);
     display.fillCircle(120, 120, 8, BLACK);
   }
 
   else if (menu == 2) {
-    float internal_temp = (float)temperatureRead();
-      display.setTextSize(3);
+    display.setTextSize(3);
     display.setCursor(30, 100);
     display.println("SoC:");
     display.setCursor(100, 100);
@@ -456,12 +465,15 @@ void loop()
   }
 
   display.refresh();
-  esp_light_sleep_start();
 
-  /*
-  for (int i = 0; i < 3; i++) {
-    delay(500);
-    display.refresh();
+  if (buttonState == LOW && !init_sleep) {
+    time_to_sleep = millis();
+    init_sleep = true;
   }
-  */
+
+  if (buttonState == LOW && millis() - time_to_sleep > 500) {
+    init_sleep = false;
+    esp_light_sleep_start();
+  }
+
 }
