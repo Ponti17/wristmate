@@ -30,7 +30,6 @@ extern const unsigned char vaultboy_thumbsup6 [] PROGMEM;
 extern const int vaultboy_thumbsupallArray_LEN;
 extern const unsigned char* vaultboy_thumbsupallArray[];
 
-// analog watchface
 // 'watch_face', 240x240px
 extern const unsigned char bitmap_analog_face [] PROGMEM;
 
