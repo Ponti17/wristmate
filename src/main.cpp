@@ -39,42 +39,45 @@ void setup() {
 }
 
 // Variable initialization
-String temp = "";
-String pressure = "";
-
-uint32_t time_since_scan = 0;
-bool on_startup = true;
-
 bool get_wifi = false;
 int buttonState = 0;
-uint8_t button_count = 0;
-bool shutdown = false;
-uint32_t button_millis = 0;
-int but_press = 0;
+uint8_t menu = 0; // 0 = main, 1 = analog, 2 = debug
 
-uint8_t menu = 0; // 0 = main, 1 = analog
-uint32_t time_since_menu = 0;
-bool menu_switch = false;
+uint32_t buttonStartTime = 0;
+uint32_t buttonHoldDuration = 0;
+void recordButtonHoldDuration(bool buttonState) {
+  if (buttonState == HIGH) {
+    buttonStartTime = millis();
+  }
+  else {
+    buttonHoldDuration = millis() - buttonStartTime;
+  }
+}
 
-uint32_t time_to_sleep = 0;
-bool init_sleep = false;
+int menuWrapAround(int menu) {
+  if (menu < 2) {
+    return menu + 1;
+  }
+  return 0;
+}
 
-uint32_t soc_temp_millis = 0;
-float internal_temp = 0;
+uint32_t lastButtonTime = 0;
+bool isButtonReady() {
+  if (millis() - lastButtonTime > 300) {
+    lastButtonTime = millis();
+    return true;
+  }
+  return false;
+}
 
 void loop() 
 {
   // read button
   buttonState = digitalRead(BUTTON_PIN);
+  recordButtonHoldDuration(buttonState);
 
-  if (buttonState == HIGH && millis() - time_since_menu > 250) {
-    time_since_menu = millis();
-    if (menu >= 2) {
-      menu++;
-    }
-    else {
-      menu = 0;
-    }
+  if (buttonState == HIGH && isButtonReady()) {
+    menu = menuWrapAround(menu);
   }
 
   // If time or weather data hasn't been collected, initiate wifi
@@ -94,14 +97,6 @@ void loop()
     wristmate.menu3();
   }
 
-  if (buttonState == LOW && !init_sleep) {
-    time_to_sleep = millis();
-    init_sleep = true;
-  }
-
-  if (buttonState == LOW && millis() - time_to_sleep > 500) {
-    init_sleep = false;
-    // esp_light_sleep_start();
-  }
+  // esp_light_sleep_start();
 
 }

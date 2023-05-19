@@ -316,13 +316,13 @@ void Wristmate::menu3() {
 }
 
 void Wristmate::animationThumbsUp() {
-    float AnimationSpeed = 0.3;                                                     // Animation speed. Lower = faster.
+    int AnimationSpeed = 5;                                                     // Animation speed.
     int frameTimesMilliseconds[] = {1000, 10, 8, 10, 8, 1000, 8, 10, 8, 10, 1000};  // Time each frame is displayed in milliseconds
     int frameOrder[] = {0, 1, 2, 3, 4, 5, 4, 3, 2, 1, 0};                           // Order of frames to be displayed
     for (int i = 0; i < 11; i++) {
         display.fillScreen(WHITE);
         display.drawBitmap(0, 0, vaultboy_thumbsupallArray[frameOrder[i]], 240, 240, BLACK);
         display.refresh();
-        delay(frameTimesMilliseconds[i] * AnimationSpeed);
+        delay(frameTimesMilliseconds[i] / AnimationSpeed);
   }
 }
