@@ -12,6 +12,7 @@
 #include <bitmaps.h>                            // Custom Bitmaps
 #include <weather_time.h>
 #include <pass.h>
+#include <wristmateLib.h>
 
 // Sleep mode setup
 #define uS_TO_S_FACTOR 1000000
@@ -39,55 +40,18 @@ Adafruit_BMP280 bmp;
 BMA400 accelerometer;
 uint8_t i2cAddress = BMA400_I2C_ADDRESS_DEFAULT; 
 int interruptPin = 2;
-volatile bool interruptOccured = false;
+volatile bool interruptOccured = false; 
 
-float speed_up = 0.3;
 void thumbs_up_animation() {
-  display.fillScreen(WHITE);
-  display.drawBitmap(0, 0, vaultboy_thumbsup1, 240, 240, BLACK);
-  display.refresh();
-  delay(1000 * speed_up);
-  display.fillScreen(WHITE);
-  display.drawBitmap(0, 0, vaultboy_thumbsupallArray[1], 240, 240, BLACK);
-  display.refresh();
-  delay(10 * speed_up);
-  display.fillScreen(WHITE);
-  display.drawBitmap(0, 0, vaultboy_thumbsupallArray[2], 240, 240, BLACK);
-  display.refresh();
-  delay(8 * speed_up);
-  display.fillScreen(WHITE);
-  display.drawBitmap(0, 0, vaultboy_thumbsupallArray[3], 240, 240, BLACK);
-  display.refresh();
-  delay(10 * speed_up);
-  display.fillScreen(WHITE);
-  display.drawBitmap(0, 0, vaultboy_thumbsupallArray[4], 240, 240, BLACK);
-  display.refresh();
-  delay(8 * speed_up);
-  display.fillScreen(WHITE);
-  display.drawBitmap(0, 0, vaultboy_thumbsupallArray[5], 240, 240, BLACK);
-  display.refresh();
-  delay(1000 * speed_up);
-  display.fillScreen(WHITE);
-  display.drawBitmap(0, 0, vaultboy_thumbsupallArray[4], 240, 240, BLACK);
-  display.refresh();
-  delay(8 * speed_up);
-  display.fillScreen(WHITE);
-  display.drawBitmap(0, 0, vaultboy_thumbsupallArray[3], 240, 240, BLACK);
-  display.refresh();
-  delay(10 * speed_up);
-  display.fillScreen(WHITE);
-  display.drawBitmap(0, 0, vaultboy_thumbsupallArray[2], 240, 240, BLACK);
-  display.refresh();
-  delay(8 * speed_up);
-  display.fillScreen(WHITE);
-  display.drawBitmap(0, 0, vaultboy_thumbsupallArray[1], 240, 240, BLACK);
-  display.refresh();
-  delay(10 * speed_up);
-  display.fillScreen(WHITE);
-  display.drawBitmap(0, 0, vaultboy_thumbsupallArray[0], 240, 240, BLACK);
-  display.refresh();
-  delay(1000 * speed_up);
-  display.fillScreen(WHITE);
+  float AnimationSpeed = 0.3;                                                     // Animation speed. Lower = faster.
+  int frameTimesMilliseconds[] = {1000, 10, 8, 10, 8, 1000, 8, 10, 8, 10, 1000};  // Time each frame is displayed in milliseconds
+  int frameOrder[] = {0, 1, 2, 3, 4, 5, 4, 3, 2, 1, 0};                           // Order of frames to be displayed
+  for (int i = 0; i < 11; i++) {
+    display.fillScreen(WHITE);
+    display.drawBitmap(0, 0, vaultboy_thumbsupallArray[frameOrder[i]], 240, 240, BLACK);
+    display.refresh();
+    delay(frameTimesMilliseconds[i] * AnimationSpeed);
+  }
 }
 
 // Init display on startup
@@ -379,10 +343,11 @@ void loop()
     int hourEndY = 120 - (int)(cos((hourAngle) * PI / 180.0) * 60);
     int minuteEndX = 120 + (int)(sin((minuteAngle) * PI / 180.0) * 80);
     int minuteEndY = 120 - (int)(cos((minuteAngle) * PI / 180.0) * 80);
+    int hour[] = {hourEndX, hourEndY};
+
 
     int handWidth = 5;
-    display.drawTriangle(120 - handWidth, 120 - handWidth, 120 + handWidth, 120 + handWidth, hourEndX, hourEndY, BLACK);
-    display.fillTriangle(120 - handWidth, 120 - handWidth, 120 + handWidth, 120 + handWidth, hourEndX, hourEndY, BLACK);
+    display.drawTriangle(hour[0] * 0.2, hour[1] * (-1) * 0.2, hour[0] * (-1) * 0.2, hour[1] * 0.2, hourEndX, hourEndY, BLACK);
     display.drawTriangle(120 - handWidth, 120 - handWidth, 120 + handWidth, 120 + handWidth, minuteEndX, minuteEndY, BLACK);
     display.fillTriangle(120 - handWidth, 120 - handWidth, 120 + handWidth, 120 + handWidth, minuteEndX, minuteEndY, BLACK);
 
