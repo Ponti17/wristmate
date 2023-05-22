@@ -1,3 +1,8 @@
+/*
+	* Source code for the bitmaps used in the project
+	* Created by Andreas Pedersen
+*/
+
 #include <Arduino.h>
 #include <bitmaps.h>
 

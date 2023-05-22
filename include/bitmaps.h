@@ -1,7 +1,8 @@
 /*
 	* File: bitmaps.h
-	* Contains bitmaps for all images.
-	* Andreas Pedersen
+	* Header file for bitmaps.cpp
+	* Contains references to all bitmaps
+	* Created by Andreas Pedersen
 */
 
 #include <Arduino.h>

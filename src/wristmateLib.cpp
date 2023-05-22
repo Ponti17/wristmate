@@ -1,6 +1,7 @@
 /*
     * wristmateLib.cpp
-    * Created by Andreas Pedersen, 19/05/23.
+    * A complete library for core functionality of the Wristmate smartwatch.
+    * Created by Andreas Pedersen
 */
 
 #include <Arduino.h>
