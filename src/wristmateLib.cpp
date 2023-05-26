@@ -201,17 +201,28 @@ void Wristmate::menu1() {
     int hourAngle = ((currentHour % 12) * 30) + (currentMinute / 2);
     int minuteAngle = currentMinute * 6;
 
-    int hourEndX = 120 + (int)(sin((hourAngle) * PI / 180.0) * 60);
-    int hourEndY = 120 - (int)(cos((hourAngle) * PI / 180.0) * 60);
-    int minuteEndX = 120 + (int)(sin((minuteAngle) * PI / 180.0) * 80);
-    int minuteEndY = 120 - (int)(cos((minuteAngle) * PI / 180.0) * 80);
-    int hour[] = {hourEndX, hourEndY};
 
+    float hourEndX = 120 + (int)(sin((hourAngle) * PI / 180.0) * 60);
+    float hourEndY = 120 - (int)(cos((hourAngle) * PI / 180.0) * 60);
+    float minuteEndX = 120 + (int)(sin((minuteAngle) * PI / 180.0) * 80);
+    float minuteEndY = 120 - (int)(cos((minuteAngle) * PI / 180.0) * 80);
 
-    int handWidth = 5;
-    display.drawTriangle(hour[0] * 0.2, hour[1] * (-1) * 0.2, hour[0] * (-1) * 0.2, hour[1] * 0.2, hourEndX, hourEndY, BLACK);
-    display.drawTriangle(120 - handWidth, 120 - handWidth, 120 + handWidth, 120 + handWidth, minuteEndX, minuteEndY, BLACK);
-    display.fillTriangle(120 - handWidth, 120 - handWidth, 120 + handWidth, 120 + handWidth, minuteEndX, minuteEndY, BLACK);
+    const int handWidth = 5;
+
+    // Calculate the position for the base of the hour and minute hands
+    int hourBaseX = 120 + (int)(sin(((hourAngle - 90) % 360) * PI / 180.0) * handWidth);
+    int hourBaseY = 120 - (int)(cos(((hourAngle - 90) % 360) * PI / 180.0) * handWidth);
+    int minuteBaseX = 120 + (int)(sin(((minuteAngle - 90) % 360) * PI / 180.0) * handWidth);
+    int minuteBaseY = 120 - (int)(cos(((minuteAngle - 90) % 360) * PI / 180.0) * handWidth);
+
+    // Calculate the position for the tip of the hour and minute hands
+    int hourTipX = 120 + (int)(sin(((hourAngle + 90) % 360) * PI / 180.0) * handWidth);
+    int hourTipY = 120 - (int)(cos(((hourAngle + 90) % 360) * PI / 180.0) * handWidth);
+    int minuteTipX = 120 + (int)(sin(((minuteAngle + 90) % 360) * PI / 180.0) * handWidth);
+    int minuteTipY = 120 - (int)(cos(((minuteAngle + 90) % 360) * PI / 180.0) * handWidth);
+
+    display.fillTriangle(hourBaseX, hourBaseY, hourEndX, hourEndY, hourTipX, hourTipY, BLACK);
+    display.fillTriangle(minuteBaseX, minuteBaseY, minuteEndX, minuteEndY, minuteTipX, minuteTipY, BLACK);
 
     display.drawCircle(120, 120, 8, BLACK);
     display.fillCircle(120, 120, 8, BLACK);

@@ -1,7 +1,7 @@
 /*
     * wristmateLib.h
     * Header file for wristmateLib.cpp
-    * Creade by Andreas Pedersen.
+    * Creade by Andreas Pedersen
 */
 
 #include <Arduino.h>

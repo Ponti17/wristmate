@@ -15,10 +15,6 @@
 
 Wristmate wristmate(ssid, password, openWeatherApiKey);
 
-void IRAM_ATTR isr() {
-  Serial.println("Interrupt occured");
-}
-
 const int uS_TO_S_FACTOR = 1000000;
 const int BUTTON_PIN = 20;
 
@@ -43,17 +39,6 @@ bool get_wifi = false;
 int buttonState = 0;
 uint8_t menu = 0; // 0 = main, 1 = analog, 2 = debug
 
-uint32_t buttonStartTime = 0;
-uint32_t buttonHoldDuration = 0;
-void recordButtonHoldDuration(bool buttonState) {
-  if (buttonState == HIGH) {
-    buttonStartTime = millis();
-  }
-  else {
-    buttonHoldDuration = millis() - buttonStartTime;
-  }
-}
-
 int menuWrapAround(int menu) {
   if (menu < 2) {
     return menu + 1;
@@ -70,12 +55,17 @@ bool isButtonReady() {
   return false;
 }
 
+uint32_t timeSinceSleep = 0;
+void IRAM_ATTR isr() {
+  timeSinceSleep = millis();
+}
+
 void loop() 
 {
   // read button
   buttonState = digitalRead(BUTTON_PIN);
-  recordButtonHoldDuration(buttonState);
 
+  // If button is pressed, change menu
   if (buttonState == HIGH && isButtonReady()) {
     menu = menuWrapAround(menu);
   }
